@@ -4,7 +4,7 @@ Project Description: Testing Student, Instructor, Repository, Major
 """
 import sqlite3
 import unittest
-from HW11_Priyankaben_Shiyani import Student, Instructor, Repository, Major
+from StudentRepository_Priyankaben_Shiyani import Student, Instructor, Repository, Major
 
 
 class TestContainer(unittest.TestCase):
@@ -45,8 +45,8 @@ class TestContainer(unittest.TestCase):
                    ['CS', ['CS 546', 'CS 570'], ['SSW 565', 'SSW 810']]]
         self.assertEqual(expected2, actual2)
 
-    def test_student_table_db(self) -> None:
-        """ Unit Testing for student_table_db prettytable"""
+    def test_student_grade_table_db(self) -> None:
+        """ Unit Testing for student_grade_table_db prettytable"""
         db_path = r'/Users/priyankashiyani/Documents/class810/HW_11/810sql'
         db = sqlite3.connect(db_path)
         expected3 = []

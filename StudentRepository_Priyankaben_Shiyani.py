@@ -129,7 +129,7 @@ class Repository:
             print('\nInstructor Summary')
             print(self.instructor_pretty_table())
             print('\nStudent Grade Summary')
-            print(self.student_table_db(os.path.join(self._path, '810sql')))
+            print(self.student_grade_pretty_table())
            
 
     def _read_student(self) -> None:  
@@ -188,14 +188,23 @@ class Repository:
         except FileNotFoundError:
             raise FileNotFoundError(f"{os.path.join(self._path, 'majors.txt')} cannot open.")
 
+    def instructor_table_db(self, db_path: str) -> tuple:
+        """retrive the database of instructor """
+
+        db: sqlite3.Connection = sqlite3.connect(db_path)
+        query: str = """select s.Name as [Name], s.CWID, g.Course, g.Grade, i.Name as [Instructor]
+                from students s join grades g on s.CWID=g.StudentCWID join instructors i on g.InstructorCWID=i.CWID
+                order by s.Name asc;"""
+        for row in db.execute(query):
+            yield row
+            
     def student_pretty_table(self) -> PrettyTable:
         """print a prettytable with the student inforamation"""
         pt = PrettyTable(field_names=Student.student_fields)
         for student in self._students.values():
             pt.add_row(student.student_info())
         return pt
-      
-        
+       
     def instructor_pretty_table(self) -> PrettyTable:
         """print a prettytable with the instructor information"""
         
@@ -212,23 +221,14 @@ class Repository:
             pt.add_row(major.major_info())
         return pt
 
-    def student_table_db(self, db_path: str) -> PrettyTable:
-        """print a prettytable with the Major Information"""
-        try:
-            db = sqlite3.connect(db_path)
-        except sqlite3.OperationalError:
-            print(f"Error: Unable to open database at {db_path}")
-        else:
-            with db:
-                query = """select s.Name as [Name], s.CWID, g.Course, g.Grade, i.Name as [Instructor]
-                from students s join grades g on s.CWID=g.StudentCWID join instructors i on g.InstructorCWID=i.CWID
-                order by s.Name asc;"""
-                pt = PrettyTable(field_names=['Name', 'CWID', 'Course', 'Grade', 'Instructor'])
-                for row in db.execute(query):
-                    pt.add_row(row)
-                return pt
-        
+    def student_grade_pretty_table(self) -> PrettyTable:
+        """print pretty table for the student and grade summary"""
 
+        pt:PrettyTable = PrettyTable(field_names=['NAME', 'CWID', 'COURSE', 'GRADE','INSTRUCTOR'])
+        for inst in self.instructor_table_db('/Users/priyankashiyani/Documents/class810/HW_11/810sql'):
+            pt.add_row(inst)
+        return pt
+    
 
 def file_reader(path: str, num_fields: int, sep: str=',', header: bool=True) -> Iterator[Tuple[str, ...]]:
     """ Function for file reading """
