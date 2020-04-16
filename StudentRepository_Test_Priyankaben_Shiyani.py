@@ -2,14 +2,15 @@
 Author: Priyankaben Shiyani
 Project Description: Testing Student, Instructor, Repository, Major
 """
+import sqlite3
 import unittest
-from HW10_Priyankaben_Shiyani import Student, Instructor, Repository, Major
+from HW11_Priyankaben_Shiyani import Student, Instructor, Repository, Major
 
 
 class TestContainer(unittest.TestCase):
     def setUp(self):
-        self.test_path = r'/Users/priyankashiyani/Documents/class810/HW_10'
-        self.repo = Repository(self.test_path, True)
+        self.test_path = r'/Users/priyankashiyani/Documents/class810/HW_11'
+        self.repo = Repository(self.test_path, False)
 
     def test_instructor_prettytable(self) -> None:
         """ Unit Testing for instructor_prettytable"""
@@ -18,51 +19,54 @@ class TestContainer(unittest.TestCase):
             for row in instructor.instructor_info():
                 expected1.append(row)
 
-        actual1 = [('98765', 'Einstein, A', 'SFEN', 'SSW 567', 4),
-                   ('98765', 'Einstein, A', 'SFEN', 'SSW 540', 3),
-                   ('98764', 'Feynman, R', 'SFEN', 'SSW 564', 3),
-                   ('98764', 'Feynman, R', 'SFEN', 'SSW 687', 3),
-                   ('98764', 'Feynman, R', 'SFEN', 'CS 501', 1),
-                   ('98764', 'Feynman, R', 'SFEN', 'CS 545', 1),
-                   ('98763', 'Newton, I', 'SFEN', 'SSW 555', 1),
-                   ('98763', 'Newton, I', 'SFEN', 'SSW 689', 1),
-                   ('98760', 'Darwin, C', 'SYEN', 'SYS 800', 1),
-                   ('98760', 'Darwin, C', 'SYEN', 'SYS 750', 1),
-                   ('98760', 'Darwin, C', 'SYEN', 'SYS 611', 2),
-                   ('98760', 'Darwin, C', 'SYEN', 'SYS 645', 1)]
+        actual1 = [('98764', 'Cohen, R', 'SFEN', 'CS 546', 1),
+                   ('98763', 'Rowland, J', 'SFEN', 'SSW 810', 4),
+                   ('98763', 'Rowland, J', 'SFEN', 'SSW 555', 1),
+                   ('98762', 'Hawking, S', 'CS', 'CS 501', 1),
+                   ('98762', 'Hawking, S', 'CS', 'CS 546', 1),
+                   ('98762', 'Hawking, S', 'CS', 'CS 570', 1)]
 
         self.assertEqual(expected1, actual1)
 
     def test_student_prettytable(self) ->None:
         """ Unit Testing for student_prettytable"""
-        expect = [student.student_info() for student in self.repo._students.values()]
-        actual = [['10103', 'Baldwin, C', 'SFEN', ['CS 501', 'SSW 564', 'SSW 567', 'SSW 687'], ['SSW 540', 'SSW 555'],
-                   [],3.44],
-                    ['10115', 'Wyatt, X', 'SFEN', ['CS 545', 'SSW 564', 'SSW 567', 'SSW 687' ],
-                    ['SSW 540', 'SSW 555'], [], 3.81], 
-                    ['10172', 'Forbes, I', 'SFEN', ['SSW 555', 'SSW 567'], ['SSW 540', 'SSW 564'], 
-                    ['CS 501', 'CS 513', 'CS 545'], 3.88],
-                    ['10175', 'Erickson, D', 'SFEN', ['SSW 564', 'SSW 567', 'SSW 687'], ['SSW 540', 'SSW 555'], 
-                    ['CS 501', 'CS 513', 'CS 545'], 3.58],
-                    ['10183', 'Chapman, O', 'SFEN', ['SSW 689'], ['SSW 540', 'SSW 555', 'SSW 564', 'SSW 567'],
-                    ['CS 501', 'CS 513', 'CS 545'], 4.0], 
-                    ['11399', 'Cordova, I', 'SYEN', ['SSW 540'], ['SYS 612', 'SYS 671',  'SYS 800'], [], 3.0],
-                    ['11461', 'Wright, U', 'SYEN', ['SYS 611', 'SYS 750', 'SYS 800'], ['SYS 612', 'SYS 671'], 
-                    [ 'SSW 540', 'SSW 565', 'SSW 810'], 3.92],
-                    ['11658', 'Kelly, P', 'SYEN', [], ['SYS 612', 'SYS 671', 'SYS 800'],
-                    [ 'SSW 540', 'SSW 565', 'SSW 810'], 0.0], 
-                    ['11714', 'Morton, A', 'SYEN', ['SYS 611', 'SYS 645'], ['SYS 612', 'SYS 671', 'SYS 800'],
-                    [ 'SSW 540', 'SSW 565', 'SSW 810'],3.0],
-                    ['11788', 'Fuller, E', 'SYEN', ['SSW 540'], ['SYS 612', 'SYS 671', 'SYS 800'], [], 4.0]]
-        self.assertEqual(expect, actual)
+        expected = [student.student_info() for student in self.repo._students.values()]
+        actual = [['10103', 'Jobs, S', 'SFEN', ['CS 501', 'SSW 810'], ['SSW 540', 'SSW 555'], [], 3.38],
+                  ['10115', 'Bezos, J', 'SFEN', ['SSW 810'], ['SSW 540', 'SSW 555'], ['CS 501', 'CS 546'], 4.0],
+                  ['10183', 'Musk, E', 'SFEN', ['SSW 555', 'SSW 810'], ['SSW 540'], ['CS 501', 'CS 546'], 4.0],
+                  ['11714', 'Gates, B', 'CS', ['CS 546', 'CS 570', 'SSW 810'], [], [], 3.5]]
+
+        self.assertEqual(expected, actual)
 
     def test_major_prettytable(self) -> None:
         """ Unit Testing for major_prettytable"""
         expected2 = [major.major_info() for major in self.repo._majors.values()]
-        actual2 = [['SFEN', ['SSW 540', 'SSW 555', 'SSW 564', 'SSW 567'], ['CS 501', 'CS 513', 'CS 545']],
-                  ['SYEN', ['SYS 612', 'SYS 671', 'SYS 800'], ['SSW 540', 'SSW 565', 'SSW 810']]]
+        actual2 = [['SFEN', ['SSW 540', 'SSW 555', 'SSW 810'], ['CS 501', 'CS 546']],
+                   ['CS', ['CS 546', 'CS 570'], ['SSW 565', 'SSW 810']]]
         self.assertEqual(expected2, actual2)
 
+    def test_student_table_db(self) -> None:
+        """ Unit Testing for student_table_db prettytable"""
+        db_path = r'/Users/priyankashiyani/Documents/class810/HW_11/810sql'
+        db = sqlite3.connect(db_path)
+        expected3 = []
+        query = """select s.Name as [Name], s.CWID, g.Course, g.Grade, i.Name as [Instructor]
+from students s join grades g on s.CWID=g.StudentCWID join instructors i on g.InstructorCWID=i.CWID
+order by s.Name asc;"""
+        for row in db.execute(query):
+            expected3.append(row)
+
+        actual3 = [('Bezos, J', '10115', 'SSW 810', 'A', 'Rowland, J'),
+                    ('Bezos, J', '10115', 'CS 546', 'F', 'Hawking, S'),
+                    ('Gates, B', '11714', 'SSW 810', 'B-', 'Rowland, J'), 
+                    ('Gates, B', '11714', 'CS 546', 'A', 'Cohen, R'),
+                    ('Gates, B', '11714', 'CS 570', 'A-', 'Hawking, S'), 
+                    ('Jobs, S', '10103', 'SSW 810', 'A-','Rowland, J'), 
+                    ('Jobs, S', '10103', 'CS 501', 'B', 'Hawking, S' ),
+                    ('Musk, E', '10183', 'SSW 555', 'A', 'Rowland, J'), 
+                    ('Musk, E', '10183', 'SSW 810', 'A', 'Rowland, J' )]
+
+        self.assertEqual(expected3, actual3)
 
 if __name__ == '__main__':
     unittest.main(exit=False, verbosity=2)

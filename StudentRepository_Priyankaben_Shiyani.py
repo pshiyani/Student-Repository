@@ -2,6 +2,7 @@
 Author: Priyankaben Shiyani
 Project Description: Implementing Student, Instructor, Major,  Repository
 """
+import sqlite3
 from typing import DefaultDict, Dict, Iterator, Tuple
 from prettytable import PrettyTable
 from collections import defaultdict
@@ -127,13 +128,15 @@ class Repository:
             print(self.student_pretty_table())
             print('\nInstructor Summary')
             print(self.instructor_pretty_table())
+            print('\nStudent Grade Summary')
+            print(self.student_table_db(os.path.join(self._path, '810sql')))
            
 
     def _read_student(self) -> None:  
         """Read each line from student.txt and create an instance of class student for each line in file 
         and add new student to repository """  
         try:
-            for cwid, name, major_n in file_reader(os.path.join(self._path, "students.txt"), 3, sep= ';', header= True):
+            for cwid, name, major_n in file_reader(os.path.join(self._path, "students.txt"), 3, sep= '\t', header= True):
                 if cwid in self._students:
                     raise ValueError(f"Student id: {cwid} is already in file")
                 else:
@@ -149,7 +152,7 @@ class Repository:
         """Read each line from instructiors.txt file and create an instance of class Instructor for each line in the file, and
            add the new Instructor to the repository"""
         try:
-            for cwid, name, dept in file_reader(os.path.join(self._path, "instructors.txt"), 3, sep= '|', header= True):
+            for cwid, name, dept in file_reader(os.path.join(self._path, "instructors.txt"), 3, sep= '\t', header= True):
                 if cwid in self._instructors:
                     raise ValueError(f"{cwid} already in file")
                 else:
@@ -160,7 +163,7 @@ class Repository:
     def _read_grades(self) -> None:
         """Read student_cwid, course, grade, instructor_cwid"""
         try:
-            for cwid_st, course, grade, cwid_in in file_reader(os.path.join(self._path, "grades.txt"), 4, sep= '|',
+            for cwid_st, course, grade, cwid_in in file_reader(os.path.join(self._path, "grades.txt"), 4, sep= '\t',
                                                                     header= True):
                 if cwid_st not in self._students:
                     raise ValueError(f"Student with id: {cwid_st} not exist")
@@ -209,7 +212,24 @@ class Repository:
             pt.add_row(major.major_info())
         return pt
 
-    
+    def student_table_db(self, db_path: str) -> PrettyTable:
+        """print a prettytable with the Major Information"""
+        try:
+            db = sqlite3.connect(db_path)
+        except sqlite3.OperationalError:
+            print(f"Error: Unable to open database at {db_path}")
+        else:
+            with db:
+                query = """select s.Name as [Name], s.CWID, g.Course, g.Grade, i.Name as [Instructor]
+                from students s join grades g on s.CWID=g.StudentCWID join instructors i on g.InstructorCWID=i.CWID
+                order by s.Name asc;"""
+                pt = PrettyTable(field_names=['Name', 'CWID', 'Course', 'Grade', 'Instructor'])
+                for row in db.execute(query):
+                    pt.add_row(row)
+                return pt
+        
+
+
 def file_reader(path: str, num_fields: int, sep: str=',', header: bool=True) -> Iterator[Tuple[str, ...]]:
     """ Function for file reading """
     try:
@@ -230,7 +250,7 @@ def file_reader(path: str, num_fields: int, sep: str=',', header: bool=True) -> 
 
 def main():
     """ define repository for stevens"""
-    stevens = Repository(r'/Users/priyankashiyani/Documents/class810/HW_10')
+    stevens = Repository(r'/Users/priyankashiyani/Documents/class810/HW_11')
     
 if __name__ == '__main__':
     main()
