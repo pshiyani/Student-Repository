@@ -1,0 +1,23 @@
+{%extends 'base.html'%}{%block body%}
+
+<h2>{{ header }}</h2>
+<h3>{{ table }}</h3>
+
+<table border="1">
+    <th>Name</th>
+    <th>CWID</th>
+    <th>Course</th>
+    <th>Grade</th>
+    <th>Instructor</th>
+    {% for student in student %}
+        <tr>
+            <td>{{ student.Name }}</td>
+            <td>{{ student.CWID }}</td>
+            <td>{{ student.Course }} </td>
+            <td>{{ student.Grade }}</td>
+            <td>{{ student.Instructor }}</td>
+        </tr>
+    {% endfor %}
+</table>
+
+{%endblock%}
